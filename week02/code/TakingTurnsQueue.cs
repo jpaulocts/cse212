@@ -39,12 +39,26 @@ public class TakingTurnsQueue
         }
         else
         {
+
+            // Defect 2 : The original code did not provid solution for when the turns of people reached 0;
             Person person = _people.Dequeue();
-            if (person.Turns > 1)
+
+            if (person.Turns > 0)
             {
                 person.Turns -= 1;
+
+                if (person.Turns > 0)
+                {
+                    _people.Enqueue(person);
+
+                }
+            }
+            else
+            {
                 _people.Enqueue(person);
             }
+
+
 
             return person;
         }
