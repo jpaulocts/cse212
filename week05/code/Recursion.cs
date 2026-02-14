@@ -45,7 +45,7 @@ public static class Recursion
     /// You can assume that the size specified is always valid (between 1 
     /// and the length of the letters list).
     /// </summary>
-     public static void Permutations(string letters,int size, string word="", List<string> results)
+    public static void PermutationsChoose(List<string> results, string letters, int size, string word = "")
 {
     if (word.Length == size)
     {
@@ -55,10 +55,11 @@ public static class Recursion
 
     for (int i = 0; i < letters.Length; i++)
     {
-        var lettersLeft = letters.Remove(i, 1);
-        Permutations(lettersLeft, size, word + letters[i], results);
+        string remaining = letters.Remove(i, 1);
+        PermutationsChoose(results, remaining, size, word + letters[i]);
     }
 }
+
     
 
     /// <summary>
@@ -128,7 +129,7 @@ public static class Recursion
 
 
         // Solve using recursion
-        decimal ways = CountWaysToClimb(s - 1) + CountWaysToClimb(s - 2) + CountWaysToClimb(s - 3);
+        decimal ways = CountWaysToClimb(s - 1, remember) + CountWaysToClimb(s - 2, remember) + CountWaysToClimb(s - 3, remember);
         
         remember[s] = ways;
         return ways;
@@ -175,49 +176,37 @@ public static class Recursion
     /// Use recursion to insert all paths that start at (0,0) and end at the
     /// 'end' square into the results list.
     /// </summary>
-   public static void SolveMaze(List<string> results,Maze maze, int x = 0, int y = 0, List<(int, int)>? currPath = null)
+  public static void SolveMaze(List<string> results, Maze maze)
 {
-    // Initialize the current path list on the first call
-    if (currPath == null)
-    {
-        currPath = new List<(int, int)>();
-    }
+    SolveMazeHelper(results, maze, 0, 0, new List<(int, int)>());
+}
 
-    // Check if the current position is a valid move
-    if (!maze.IsValidMove(x, y, currPath))
-    {
+private static void SolveMazeHelper(
+    List<string> results,
+    Maze maze,
+    int x,
+    int y,
+    List<(int, int)> currPath)
+{
+    if (!maze.IsValidMove(currPath, x, y))
         return;
-    }
 
-    // Add the current position to the path
     currPath.Add((x, y));
 
-    // Check if we have reached the end of the maze
     if (maze.IsEnd(x, y))
     {
-        // Convert the current path to a string and store it
         results.Add(currPath.AsString());
     }
     else
     {
-        // Explore all possible directions recursively
-
-        // Move right
-        SolveMaze(results, maze, x + 1, y, currPath);
-
-        // Move left
-        SolveMaze(results, maze, x - 1, y, currPath);
-
-        // Move down
-        SolveMaze(results, maze, x, y + 1, currPath);
-
-        // Move up
-        SolveMaze(results, maze, x, y - 1, currPath);
+        SolveMazeHelper(results, maze, x + 1, y, currPath);
+        SolveMazeHelper(results, maze, x - 1, y, currPath);
+        SolveMazeHelper(results, maze, x, y + 1, currPath);
+        SolveMazeHelper(results, maze, x, y - 1, currPath);
     }
 
-    // Backtracking:
-    // Remove the last position so other paths can be explored
     currPath.RemoveAt(currPath.Count - 1);
 }
+
 
 }
